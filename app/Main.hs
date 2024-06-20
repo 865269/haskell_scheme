@@ -6,7 +6,7 @@ import Control.Monad
 
 
 main :: IO ()
-main = do 
+main = do
         (expr:_) <- getArgs
         putStrLn (readExpr expr)
 
@@ -36,11 +36,11 @@ parseString = do
                 return $ String x
 
 parseAtom :: Parser LispVal
-parseAtom = do 
+parseAtom = do
               first <- letter <|> symbol
               rest <- many (letter <|> digit <|> symbol)
               let atom = first:rest
-              return $ case atom of 
+              return $ case atom of
                          "#t" -> Bool True
                          "#f" -> Bool False
                          _    -> Atom atom
@@ -51,4 +51,17 @@ parseNumber = liftM (Number . read) $ many1 digit
 parseExpr :: Parser LispVal
 parseExpr = parseAtom
          <|> parseString
-         <|> parseNumber
+         <|> parseNumber''
+
+-- #1.1
+
+parseNumber' :: Parser LispVal
+parseNumber' = do
+                 x <- many1 digit
+                 return ((Number . read) x)
+
+-- #1.2
+
+parseNumber'' :: Parser LispVal
+parseNumber'' = many1 digit >>= \x -> return ((Number . read) x)
+                 
